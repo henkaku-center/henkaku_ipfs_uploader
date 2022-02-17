@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 import { Form, Button, Segment, Message } from 'semantic-ui-react';
-import { getTextIpfsHash } from '../utils/getIpfsHash';
+import { getSvgIpfsHash } from '../utils/getIpfsHash';
 import henkakuBaseSVG from '../resources/henkaku_membership';
 
 const SvgUpLoader: FC = () => {
@@ -32,7 +32,7 @@ const SvgUpLoader: FC = () => {
     parsedSVGDoc.getElementById("henkaku_member_wallet")!.textContent = walletAddress
 
     const svg = new XMLSerializer().serializeToString(parsedSVGDoc)
-    const res = await getTextIpfsHash(svg);
+    const res = await getSvgIpfsHash(svg);
     setResultHash(res);
     setEnd(true);
   };

@@ -1,13 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import 'semantic-ui-css/semantic.min.css';
 import reportWebVitals from './reportWebVitals';
 import SvgUploader from './components/SvgUploader';
+import { Wrapper }  from './styles/Wrapper';
 
 ReactDOM.render(
   <React.StrictMode>
-    <SvgUploader />
+    <Wrapper>
+      <SvgUploader />
+    </Wrapper>
   </React.StrictMode>,
   document.getElementById('root')
 );
