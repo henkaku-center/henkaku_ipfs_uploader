@@ -16,7 +16,6 @@ const SvgUpLoader: FC = () => {
     const domParser = new DOMParser();
     const parsedSVGDoc = domParser.parseFromString(henkakuBaseSVG, 'image/svg+xml');
 
-    parsedSVGDoc.getElementById("henkaku_member_name")!.textContent = user.name
     const jstNow = new Date(Date.now() + ((new Date().getTimezoneOffset() + (9 * 60)) * 60 * 1000));
     parsedSVGDoc.getElementById("henkaku_published_date")!.textContent = jstNow.getFullYear() + "." + ("00" + (jstNow.getMonth()+1)).slice(-2) + "." + ("00" + jstNow.getDate()).slice(-2);
     parsedSVGDoc.getElementById("henkaku_point")!.textContent = "$" + user.point + "Henkaku"
@@ -30,6 +29,12 @@ const SvgUpLoader: FC = () => {
       walletAddress = strHead + "..." + strFoot
     }
     parsedSVGDoc.getElementById("henkaku_member_wallet")!.textContent = walletAddress
+
+    var userName = user.name
+    if (userName.length > 10) {
+      userName = userName.slice(0,9) + "..."
+    }
+    parsedSVGDoc.getElementById("henkaku_member_name")!.textContent = userName
 
     const svg = new XMLSerializer().serializeToString(parsedSVGDoc)
     const res = await getSvgIpfsHash(svg);
@@ -67,7 +72,7 @@ const SvgUpLoader: FC = () => {
           <Segment>
             IPFS Link is{' '}
             <a
-              href={`https://ipfs.io/ipfs/${resultHash}`}
+              href={`https://gateway.pinata.cloud/ipfs/${resultHash}`}
               target="_blank"
               rel="noreferrer noopener"
             >
