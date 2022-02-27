@@ -9,6 +9,17 @@ const SvgUpLoader: FC = () => {
   const [end, setEnd] = useState(false);
   const [user, setUser] = useState({ name: "", address: "", point: "", profileUrl: "", role: ""});
 
+  const getBase64ImageFromUrl=async(imageUrl: string): Promise<any> =>
+  new Promise(resolve=>
+    fetch(imageUrl).then(res=>res.blob()).then(blob=>{
+      const reader = new FileReader();
+      reader.addEventListener('load',()=>{
+        resolve(reader.result); 
+      });
+      reader.readAsDataURL(blob);
+    })
+  );
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoad(false);
@@ -20,7 +31,9 @@ const SvgUpLoader: FC = () => {
     parsedSVGDoc.getElementById("henkaku_published_date")!.textContent = jstNow.getFullYear() + "." + ("00" + (jstNow.getMonth()+1)).slice(-2) + "." + ("00" + jstNow.getDate()).slice(-2);
     parsedSVGDoc.getElementById("henkaku_point")!.textContent = "$" + user.point + "Henkaku"
     parsedSVGDoc.getElementById("henkaku_role")!.textContent = user.role
-    parsedSVGDoc.getElementById('henkaku_profile_pic')!.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', user.profileUrl);
+
+    const base64 = await getBase64ImageFromUrl(user.profileUrl);
+    parsedSVGDoc.getElementById('henkaku_profile_pic')!.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', base64);
 
     var walletAddress = user.address
     if (user.address.lastIndexOf(".eth") == -1) {
