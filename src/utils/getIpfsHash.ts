@@ -1,9 +1,12 @@
 const axios = require('axios');
 const FormData = require('form-data');
 
-export const getSvgIpfsHash = async (blob: Blob) => {
+export const getPngIpfsHash = async (blob: Blob, fileName: string) => {
   let data = new FormData();
   data.append('file', blob);
+
+  const metadata = JSON.stringify({name: fileName});
+  data.append('pinataMetadata', metadata);
 
   const apiPromise = axios
   .post('https://api.pinata.cloud/pinning/pinFileToIPFS', data, {

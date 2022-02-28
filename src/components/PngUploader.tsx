@@ -1,10 +1,10 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { Canvg } from 'canvg';
 import { Form, Button, Segment, Message } from 'semantic-ui-react';
-import { getSvgIpfsHash } from '../utils/getIpfsHash';
+import { getPngIpfsHash } from '../utils/getIpfsHash';
 import henkakuBaseSVG from '../resources/henkaku_membership';
 
-const SvgUpLoader: FC = () => {
+const PngUpLoader: FC = () => {
   const nameRef = useRef<HTMLInputElement>(null);
   const addressRef = useRef<HTMLInputElement>(null);
   const pointRef = useRef<HTMLInputElement>(null);
@@ -45,7 +45,7 @@ const SvgUpLoader: FC = () => {
     const c = Canvg.fromString(canvas.getContext('2d')!, svg);
     await c.render();
 
-    const res = await getSvgIpfsHash(await getBlob(canvas));
+    const res = await getPngIpfsHash(await getBlob(canvas), user.name);
     setResultHash(res);
 
     setUploading(false);
@@ -131,4 +131,4 @@ const SvgUpLoader: FC = () => {
   );
 };
 
-export default SvgUpLoader;
+export default PngUpLoader;

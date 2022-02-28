@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import 'semantic-ui-css/semantic.min.css';
 import reportWebVitals from './reportWebVitals';
-import SvgUploader from './components/SvgUploader';
+import PngUploader from './components/PngUploader';
 import { Wrapper }  from './styles/Wrapper';
 
 ReactDOM.render(
   <React.StrictMode>
     <Wrapper>
-      <SvgUploader />
+      <PngUploader />
     </Wrapper>
   </React.StrictMode>,
   document.getElementById('root')
