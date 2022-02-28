@@ -1,14 +1,12 @@
 const axios = require('axios');
 const FormData = require('form-data');
 
-export const getSvgIpfsHash = async (fileData: string) => {
-
+export const getSvgIpfsHash = async (blob: Blob) => {
   let data = new FormData();
-  var blob = new Blob([fileData], { type: "image/svg+xml"});
   data.append('file', blob);
 
   const apiPromise = axios
-  .post("https://api.pinata.cloud/pinning/pinFileToIPFS", data, {
+  .post('https://api.pinata.cloud/pinning/pinFileToIPFS', data, {
       maxBodyLength: 'Infinity', //this is needed to prevent axios from erroring out with large files
       headers: {
           'Content-Type': `multipart/form-data; boundary=${data._boundary}`,
