@@ -1,11 +1,13 @@
 import React, { FC, useRef, useState } from 'react';
 import { Canvg } from 'canvg';
-import { Form, Button, Segment, Message } from 'semantic-ui-react';
+import { Form, Button, Grid, Segment, Message } from 'semantic-ui-react';
 import { getPngIpfsHash } from '../utils/getIpfsHash';
 import henkakuBaseSVG from '../resources/henkaku_membership';
 
 const PngUpLoader: FC = () => {
+  const nameFontSizeDefault = 60;
   const nameRef = useRef<HTMLInputElement>(null);
+  const nameFontSizeRef = useRef<HTMLInputElement>(null);
   const addressRef = useRef<HTMLInputElement>(null);
   const pointRef = useRef<HTMLInputElement>(null);
   const roleRef = useRef<HTMLInputElement>(null);
@@ -32,7 +34,7 @@ const PngUpLoader: FC = () => {
     });
   }
 
-  const updateSvg = async ({name = '', address = '', role = '', point = ''}): Promise<string> => {
+  const updateSvg = async ({name = '', nameFontSize = nameFontSizeDefault, address = '', role = '', point = ''}): Promise<string> => {
     const domParser = new DOMParser();
     const parsedSVGDoc = domParser.parseFromString(henkakuBaseSVG, 'image/svg+xml');
 
@@ -53,11 +55,9 @@ const PngUpLoader: FC = () => {
     }
     parsedSVGDoc.getElementById('henkaku_member_wallet')!.textContent = walletAddress
 
-    let userName = name;
-    if (userName.length > 10) {
-      userName = userName.slice(0,9) + '...'
-    }
-    parsedSVGDoc.getElementById('henkaku_member_name')!.textContent = userName
+    const nameElem = parsedSVGDoc.getElementById('henkaku_member_name')!;
+    nameElem.textContent = name
+    nameElem.setAttribute('font-size', `${nameFontSize}px`);
 
     const svgString = new XMLSerializer().serializeToString(parsedSVGDoc);
     setCardSvg(svgString);
@@ -72,6 +72,7 @@ const PngUpLoader: FC = () => {
 
     const svg = await updateSvg({
       name: nameRef.current?.value,
+      nameFontSize: parseFloat(nameFontSizeRef.current?.value ?? `${nameFontSizeDefault}`),
       address: addressRef.current?.value,
       role: roleRef.current?.value,
       point: pointRef.current?.value,
@@ -96,6 +97,7 @@ const PngUpLoader: FC = () => {
   const handleBlur = async (event: React.FocusEvent<HTMLInputElement>) => {
     await updateSvg({
       name: nameRef.current?.value,
+      nameFontSize: parseFloat(nameFontSizeRef.current?.value ?? `${nameFontSizeDefault}`),
       address: addressRef.current?.value,
       role: roleRef.current?.value,
       point: pointRef.current?.value,
@@ -105,41 +107,55 @@ const PngUpLoader: FC = () => {
   return (
     <>
       <h1>Henkaku Membership Uploader</h1>
-      <Segment.Group>
-        <Segment>
-          <Form onSubmit={handleSubmit}>
-            <Form.Field>
-            <label htmlFor="name">User Name</label>
-            <input type="text" name="name" ref={nameRef} onBlur={handleBlur} />
-            <label htmlFor="address">Wallet Address</label>
-            <input type="text" name="address" ref={addressRef} onBlur={handleBlur} />
-            <label htmlFor="profileUrl">Profile Pic URL</label>
-            <input type="text" name="profileUrl" onChange={handleChangeProfileUrl} onBlur={handleBlur} />
-            <label htmlFor="role">Role</label>
-            <input type="text" name="role" ref={roleRef} onBlur={handleBlur} />
-            <label htmlFor="point">Point</label>
-            <input type="number" name="point" ref={pointRef} onBlur={handleBlur} />
-            </Form.Field>
-            <Button type="submit">Submit</Button>
-          </Form>
-          {uploading ? <Message as="h3">Uploading...</Message> : <></>}
-          {uploaded ? <Message positive>End</Message> : <></>}
-          <Segment>IPFS Hash : {resultHash}</Segment>
-          <Segment>
-            IPFS Link is{' '}
-            <a
-              href={`https://gateway.pinata.cloud/ipfs/${resultHash}`}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              here
-            </a>
-          </Segment>
+      <Grid>
+        <Grid.Column floated='left' width={10}>
+          <Segment.Group>
+            <Segment>
+              <Form onSubmit={handleSubmit}>
+                <Form.Field>
+                  <Grid>
+                    <Grid.Column floated='left' width={12}>
+                      <label htmlFor="name">User Name</label>
+                      <input type="text" name="name" ref={nameRef} onBlur={handleBlur} />
+                    </Grid.Column>
+                    <Grid.Column floated='left' width={4}>
+                    <label htmlFor="nameFontSize">font-size(px)</label>
+                      <input type="number" name="nameFontSize" ref={nameFontSizeRef} onBlur={handleBlur} defaultValue={60} max={nameFontSizeDefault} min={30} />
+                    </Grid.Column>
+                  </Grid>
+                  <label htmlFor="address">Wallet Address</label>
+                  <input type="text" name="address" ref={addressRef} onBlur={handleBlur} />
+                  <label htmlFor="profileUrl">Profile Pic URL</label>
+                  <input type="text" name="profileUrl" onChange={handleChangeProfileUrl} onBlur={handleBlur} />
+                  <label htmlFor="role">Role</label>
+                  <input type="text" name="role" ref={roleRef} onBlur={handleBlur} />
+                  <label htmlFor="point">Point</label>
+                  <input type="number" name="point" ref={pointRef} onBlur={handleBlur} />
+                </Form.Field>
+                <Button type="submit">Submit</Button>
+              </Form>
+              {uploading ? <Message as="h3">Uploading...</Message> : <></>}
+              {uploaded ? <Message positive>End</Message> : <></>}
+              <Segment>IPFS Hash : {resultHash}</Segment>
+              <Segment>
+                IPFS Link is{' '}
+                <a
+                  href={`https://gateway.pinata.cloud/ipfs/${resultHash}`}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  here
+                </a>
+              </Segment>
+            </Segment>
+          </Segment.Group>
+        </Grid.Column>
+        <Grid.Column floated='left' width={6}>
           {cardSvg && (
-            <img src={'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(cardSvg)} alt="Preview" width={500} height={500} />
+            <img src={'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(cardSvg)} alt="Preview" height={500} />
           )}
-        </Segment>
-      </Segment.Group>
+        </Grid.Column>
+    </Grid>
     </>
   );
 };
